@@ -2,6 +2,10 @@ import flask
 import sqlite3
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = flask.Flask(
     __name__,
@@ -23,7 +27,8 @@ cursor.execute('''
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         recipe TEXT NOT NULL,
-        nationality TEXT NOT NULL
+        nationality TEXT NOT NULL,
+        instructions TEXT 
     )
 ''')
 conn.commit()  
@@ -33,20 +38,20 @@ conn.close()
 def index():
     return flask.send_from_directory("static", "index.html")
 
-if __name__ == "__main__":
-    app.run()
-
 @app.post("/recipes")
-
 def create_recipe():
     data = flask.request.get_json()
     name = data.get('name')
     recipe = data.get('recipe')
     nationality = data.get('nationality')
+    instructions = data.get('instructions')
+    password = data.get('password')
+    if password != os.getenv("PASS"):
+        return "Unauthorized", 401
     
     conn = sqlite3.connect('recipes.db')
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO recipes (name, recipe, nationality) VALUES (?, ?, ?)', (name, recipe, nationality))
+    cursor.execute('INSERT INTO recipes (name, recipe, nationality, instructions) VALUES (?, ?, ?, ?)', (name, recipe, nationality, instructions))
     conn.commit()
     conn.close()
 
@@ -56,10 +61,13 @@ def create_recipe():
 def get_recipes():
     conn = sqlite3.connect('recipes.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT id, name, recipe, nationality FROM recipes')
+    cursor.execute('SELECT id, name, recipe, nationality, instructions FROM recipes')
     rows = cursor.fetchall()
     conn.close()
     
-    recipes = [{'id': row[0], 'name': row[1], 'recipe': row[2], 'nationality': row[3]} for row in rows]
+    recipes = [{'id': row[0], 'name': row[1], 'recipe': row[2], 'nationality': row[3], 'instructions': row[4]} for row in rows]
     return flask.jsonify(recipes)
+
+if __name__ == "__main__":
+    app.run()
 
