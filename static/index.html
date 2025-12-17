@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Vejas' Christmas Recipe Tracker</title>
+        <script src="./main.js" defer></script>
+        <link rel="stylesheet" href="./styles.css">
+    </head>
+    <body>
+        <div class="content">
+            <h1>Vejas' Christmas Recipe Tracker!</h1>
+            <p>Tracking recipes since 2025</p>
+        </div>
+        <form id="recipeForm">
+            <label for="name">Name: </label>
+            <input id="name" type="text" name="name" required>
+            <br>
+            <label for="recipe">Your Christmas Recipe: </label>
+            <input id="recipe" type="text" name="recipe" required>
+            <br>
+            <label for="nationality">Nationality: </label>
+            <input id="nationality" type="text" name="nationality" required>
+            <br>
+            <input type="submit" value="Submit!">
+        </form>
+        <div id="recipes"></div>
+    </body>
+</html>
